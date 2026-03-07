@@ -1,0 +1,85 @@
+import Joi from "joi";
+import { generalFeilds } from "../../utils/generalFeilds/index.js";
+
+export const registeritonSchema = {
+  body: Joi.object()
+    .keys({
+      name: generalFeilds.name.required(),
+      email: generalFeilds.email.required(),
+      password: generalFeilds.password.required(),
+      codeCountry: generalFeilds.codeCountry.required(),
+      phone: Joi.when("codeCountry", {
+        is: "+20",
+        then: Joi.string().pattern(/^(?:\+20|0020|0)?1[0125][0-9]{8}$/).required().messages({
+          "string.pattern.base": "Please enter a valid Egyptian phone number",
+        }),
+        otherwise: Joi.when("codeCountry", {
+          is: "+966",
+          then: Joi.string().pattern(/^(?:\+966|0)?5[0-9]{8}$/).required().messages({
+            "string.pattern.base": "Please enter a valid Saudi phone number",
+          }),
+          otherwise: Joi.string().required().messages({
+            "string.pattern.base": "Please enter a valid phone number",
+          }),
+        }),
+      }),
+    })
+    .required(),
+};
+export const loginSchema = {
+  body: Joi.object()
+    .keys({
+      email: generalFeilds.email.required(),
+      password: generalFeilds.password.required(),
+    })
+    .required(),
+};
+export const googleSignupSchema = {
+  body: Joi.object()
+    .keys({
+      idToken: generalFeilds.idToken.required(),
+    })
+    .required(),
+};
+export const googleLoginSchema = {
+  body: Joi.object()
+    .keys({
+      idToken: generalFeilds.idToken.required(),
+      Provider: generalFeilds.provider.required(),
+    })
+    .required(),
+};
+export const verifiyCodeSchema = {
+  body: Joi.object()
+    .keys({
+      email: generalFeilds.email.required(),
+      otp: generalFeilds.otp.required(),
+    })
+    .required(),
+};
+export const forgetPasswordSchema = {
+  body: Joi.object()
+    .keys({
+      email: generalFeilds.email.required(),
+    })
+    .required(),
+};
+export const resendOtpSchema = {
+  body: Joi.object()
+    .keys({
+      email: generalFeilds.email.required(),
+    })
+    .required(),
+};
+export const resetPasswordSchema = {
+  body: Joi.object()
+    .keys({
+      email: generalFeilds.email.required(),
+      otp: generalFeilds.otp.required(),
+      password: generalFeilds.password.required(),
+      confirm: generalFeilds.confirmPassword.required(),
+    })
+    .required(),
+};
+
+
