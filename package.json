@@ -6,7 +6,11 @@
   "type": "module",
   "scripts": {
     "start": "node ./src/index.js",
-    "dev": "nodemon ./src/index.js"
+    "dev": "nodemon ./src/index.js",
+    "seed:currency": "node prisma/seeders/currency.seeder.js",
+    "seed:plans": "node prisma/seeders/plans.seeder.js",
+    "seed:subjects": "node prisma/seeders/subjects.seeder.js",
+    "seed:all": "npx prisma db seed"
   },
   "keywords": [],
   "author": "",
@@ -32,5 +36,8 @@
     "pg": "^8.16.3",
     "prisma": "^7.4.2",
     "redis": "^5.10.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

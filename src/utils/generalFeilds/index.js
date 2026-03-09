@@ -16,8 +16,8 @@ export const generalFeilds = {
   password: Joi.string()
     .pattern(
       new RegExp(
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&^#])[A-Za-z\\d@$!%*?&^#]{8,}$"
-      )
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&^#])[A-Za-z\\d@$!%*?&^#]{8,}$",
+      ),
     )
     .messages({
       "string.base": "Password must be a string",
@@ -68,23 +68,20 @@ export const generalFeilds = {
       "string.pattern.base": "OTP must contain only numbers",
       "any.required": "OTP is required",
     }),
-  userId: Joi.string()
-    .regex(/^c[a-z0-9]{20,32}$/)
-    .required()
-    .messages({
-      "string.base": "User ID must be a string",
-      "string.empty": "User ID cannot be empty",
-      "string.pattern.base": "ID format is invalid, it must be a valid CUID",
-      "any.required": "User ID is required",
-    }),
-  bio: Joi.string().min(16).max(300).messages({
-    "string.base": "Bio must be a string",
-    "string.empty": "Bio cannot be empty",
-    "string.min": "Bio must be at least {#limit} characters",
-    "string.max": "Bio must be at most {#limit} characters",
-    "any.required": "Bio is required",
-  }),
+  // bio: Joi.string().min(16).max(300).messages({
+  //   "string.base": "Bio must be a string",
+  //   "string.empty": "Bio cannot be empty",
+  //   "string.min": "Bio must be at least {#limit} characters",
+  //   "string.max": "Bio must be at most {#limit} characters",
+  //   "any.required": "Bio is required",
+  // }),
   search: Joi.string().max(32).messages({
+    "string.base": "Search query must be a string",
+    "string.empty": "Search query cannot be empty",
+    "string.max": "Search query must be at most {#limit} characters",
+    "any.required": "Search query is required",
+  }),
+  search_Currency: Joi.string().max(32).messages({
     "string.base": "Search query must be a string",
     "string.empty": "Search query cannot be empty",
     "string.max": "Search query must be at most {#limit} characters",
@@ -137,10 +134,81 @@ export const generalFeilds = {
       "any.required": "File size is required",
     }),
   },
-  codeCountry: Joi.string().required().valid("+20", "+966").messages({
+  codeCountry: Joi.string().valid("+20", "+966").messages({
     "string.base": "Code country must be a string",
     "string.empty": "Code country cannot be empty",
     "any.only": "Code country must be either '+20' or '+966'",
     "any.required": "Code country is required",
+  }),
+  name_en: Joi.string().messages({
+    "string.base": "Name must be a string",
+    "string.empty": "Name cannot be empty",
+    "any.required": "Name is required",
+  }),
+  name_ar: Joi.string().messages({
+    "string.base": "Name must be a string",
+    "string.empty": "Name cannot be empty",
+    "any.required": "Name is required",
+  }),
+  symbol: Joi.string().messages({
+    "string.base": "Symbol must be a string",
+    "string.empty": "Symbol cannot be empty",
+    "any.required": "Symbol is required",
+  }),
+  code: Joi.string().messages({
+    "string.base": "Code must be a string",
+    "string.empty": "Code cannot be empty",
+    "any.required": "Code is required",
+  }),
+  exchangeRate: Joi.number().messages({
+    "number.base": "Exchange rate must be a number",
+    "number.empty": "Exchange rate cannot be empty",
+    "any.required": "Exchange rate is required",
+  }),
+  default: Joi.boolean().messages({
+    "boolean.base": "Default must be a boolean",
+    "boolean.empty": "Default cannot be empty",
+    "any.required": "Default is required",
+  }),
+
+  description: Joi.string().min(50).max(1000).messages({
+    "string.base": "Description must be a string",
+    "string.empty": "Description cannot be empty",
+    "any.required": "Description is required",
+  }),
+  price: Joi.number().positive().required().messages({
+    "number.base": "Price must be a number",
+    "number.positive": "Price must be a positive number",
+    "any.required": "Price is required",
+  }),
+  duration: Joi.number().positive().required().messages({
+    "number.base": "Duration must be a number",
+    "number.positive": "Duration must be a positive number",
+    "any.required": "Duration is required",
+  }),
+  sessionsCount: Joi.number().positive().required().messages({
+    "number.base": "Sessions count must be a number",
+    "number.positive": "Sessions count must be a positive number",
+    "any.required": "Sessions count is required",
+  }),
+  active: Joi.boolean().required().messages({
+    "boolean.base": "Active must be a boolean",
+    "boolean.empty": "Active cannot be empty",
+    "any.required": "Active is required",
+  }),
+  bestSeller: Joi.boolean().required().messages({
+    "boolean.base": "Best seller must be a boolean",
+    "boolean.empty": "Best seller cannot be empty",
+    "any.required": "Best seller is required",
+  }),
+  features: Joi.array().items(Joi.string()).required().messages({
+    "array.base": "Features must be an array",
+    "array.empty": "Features cannot be empty",
+    "any.required": "Features is required",
+  }),
+  id: Joi.string().uuid().required().messages({
+    "string.base": "ID must be a string",
+    "string.empty": "ID cannot be empty",
+    "any.required": "ID is required",
   }),
 };

@@ -1,22 +1,73 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
-    provider = "postgresql"
+  provider = "postgresql"
 }
 
 // users model 
 
 model user {
-    id          String    @id @default(uuid())
-    email       String    @unique
-    password    String
-    name        String
-    phone       String
-    codeCountry String
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    confirmAt   DateTime?
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  name        String
+  phone       String
+  codeCountry String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  confirmAt   DateTime?
 
-    @@index([email])
+  @@index([email])
+}
+
+model currency {
+  id           String   @id @default(uuid())
+  name_en      String
+  name_ar      String
+  symbol       String
+  code         String   @unique
+  exchangeRate Float
+  default      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Plans        Plans[]
+
+  @@index([name_en])
+  @@index([name_ar])
+  @@index([code])
+}
+
+model Plans {
+  id            String   @id @default(uuid())
+  name_en       String   @unique
+  name_ar       String   @unique
+  description   String
+  price         String
+  duration      Int
+  sessionsCount Int
+  active        Boolean  @default(false)
+  bestSeller    Boolean  @default(false)
+  features      String[]
+  currencyId    String
+  currency      currency @relation(fields: [currencyId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([name_en])
+  @@index([name_ar])
+}
+
+model subjects {
+  id        String   @id @default(uuid())
+  name_en   String   @unique
+  name_ar   String   @unique
+  active    Boolean  @default(false)
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name_en])
+  @@index([name_ar])
 }

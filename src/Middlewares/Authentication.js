@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/response.js";
 import { verifyToken } from "../utils/Token/token.js";
-import * as db from "../dataBase/dbService.js";
+import * as db from "../database/dbService.js";
 
 export const authentication = () => {
   return asyncHandler(async (req, res, next) => {
@@ -14,9 +14,9 @@ export const authentication = () => {
     }
     const decoded = verifyToken({ token });
     const user = await db.findFirst({
-      model: "User",
+      model: "user",
       where: {
-        user_id: decoded.id,
+        id: decoded.id,
         confirmAt: {
           not: null,
         },

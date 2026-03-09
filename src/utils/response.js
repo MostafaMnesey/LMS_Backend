@@ -40,7 +40,21 @@ export const globalErrorHandling = (err, req, res, next) => {
   });
 };
 
-export const successResponse = ({ res, status = 200, data, message = "success" }) => {
+export const errorResponse = ({
+  next,
+  status = 400,
+  data,
+  message = "error",
+}) => {
+  return next(new Error(message, { cause: status }));
+};
+
+export const successResponse = ({
+  res,
+  status = 200,
+  data,
+  message = "success",
+}) => {
   return res.status(status).json({
     message,
     status,
