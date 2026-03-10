@@ -18,8 +18,43 @@ model user {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   confirmAt   DateTime?
+  role        role?     @relation(fields: [roleId], references: [id])
+  roleId      String?   @unique
 
   @@index([email])
+}
+
+model role {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            user?
+  rolePermissions rolePermission[]
+}
+
+model permission {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  code            String           @unique
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions rolePermission[]
+
+  @@index([name])
+  @@index([code])
+}
+
+model rolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         role       @relation(fields: [roleId], references: [id])
+  permission   permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([roleId, permissionId])
 }
 
 model currency {

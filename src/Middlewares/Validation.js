@@ -1,7 +1,7 @@
 import joi from "joi";
 import { asyncHandler } from "../utils/response.js";
 
-export const Validation = (schema) => {
+export const validation = (schema) => {
   return asyncHandler(async (req, res, next) => {
     const validationErrors = [];
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as auth from "./auth.service.js";
 //import cookieParser from "cookie-parser";
-import { Validation } from "../../Middlewares/Validation.js";
+import { validation } from "../../Middlewares/Validation.js";
 import {
   forgetPasswordSchema,
   googleLoginSchema,
@@ -14,9 +14,9 @@ import {
 } from "./auth.validation.js";
 const router = Router();
 
-router.post("/sign-up", Validation(registeritonSchema), auth.register);
+router.post("/sign-up", validation(registeritonSchema), auth.register);
 
-router.post("/sign-in", Validation(loginSchema), auth.login); //done
+router.post("/sign-in", validation(loginSchema), auth.login); //done
 
 //router.post("/refresh", cookieParser(), auth.refresh); //done
 
@@ -30,20 +30,20 @@ router.post("/sign-in", Validation(loginSchema), auth.login); //done
 
 router.post(
   "/verify-account",
-  Validation(verifiyCodeSchema),
+  validation(verifiyCodeSchema),
   auth.verifyAccount,
 ); //done
 
-router.post("/resend-otp", Validation(resendOtpSchema), auth.resendOtp);
+router.post("/resend-otp", validation(resendOtpSchema), auth.resendOtp);
 router.post(
   "/forget-password",
-  Validation(forgetPasswordSchema),
+  validation(forgetPasswordSchema),
   auth.forgetPassword,
 );
 
 router.patch(
   "/reset-password",
-  Validation(resetPasswordSchema),
+  validation(resetPasswordSchema),
   auth.resetPassword
 );
 

@@ -10,6 +10,7 @@
     "seed:currency": "node prisma/seeders/currency.seeder.js",
     "seed:plans": "node prisma/seeders/plans.seeder.js",
     "seed:subjects": "node prisma/seeders/subjects.seeder.js",
+    "seed:permissions":"node prisma/seeders/permissions.seeder.js",
     "seed:all": "npx prisma db seed"
   },
   "keywords": [],

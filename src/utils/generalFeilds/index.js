@@ -1,5 +1,34 @@
 import Joi from "joi";
 export const generalFeilds = {
+  role_name: Joi.string().min(3).max(15).messages({
+    "string.base": "Role name must be a string",
+    "string.empty": "Role name cannot be empty",
+    "string.min": "Role name must be at least {#limit} characters",
+    "string.max": "Role name must be at most {#limit} characters",
+    "any.required": "Role name is required",
+  }),
+  permission_name: Joi.string().min(3).max(32).messages({
+    "string.base": "Permission name must be a string",
+    "string.empty": "Permission name cannot be empty",
+    "string.min": "Permission name must be at least {#limit} characters",
+    "string.max": "Permission name must be at most {#limit} characters",
+    "any.required": "Permission name is required",
+  }),
+  permission_code: Joi.string()
+    .min(3)
+    .max(32)
+    .pattern(new RegExp("^[A-Z]+_[A-Z]+$"))
+    .messages({
+      "string.base": "Permission code must be a string",
+      "string.empty": "Permission code cannot be empty",
+
+      "string.pattern.base":
+        "Permission code must be in the format 'ACTION_NAME' (e.g. CREATE_USER)",
+
+      "string.min": "Permission code must be at least {#limit} characters",
+      "string.max": "Permission code must be at most {#limit} characters",
+      "any.required": "Permission code is required",
+    }),
   name: Joi.string().min(3).max(32).messages({
     "string.base": "First name must be a string",
     "string.empty": "First name cannot be empty",
@@ -211,4 +240,12 @@ export const generalFeilds = {
     "string.empty": "ID cannot be empty",
     "any.required": "ID is required",
   }),
+  color: Joi.string()
+    .pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+    .messages({
+      "string.base": "Color must be a string",
+      "string.empty": "Color cannot be empty",
+      "string.pattern.base": "Color must be a valid hex color",
+      "any.required": "Color is required",
+    }),
 };

@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import { seedCurrencies } from "./seeders/currency.seeder.js";
 import { seedPlans } from "./seeders/plans.seeder.js";
 import { seedSubjects } from "./seeders/subjects.seeder.js";
+import { seedPermissions } from "./seeders/permissions.seeder.js";
+import { seedRoles } from "./seeders/roles.seeder.js";
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ async function main() {
   await seedCurrencies();
   await seedPlans();
   await seedSubjects();
+  await seedPermissions();
+  await seedRoles();
 
   console.log("--- Seeding Finished Successfully ---");
 }

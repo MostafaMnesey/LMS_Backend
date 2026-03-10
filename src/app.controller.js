@@ -4,6 +4,8 @@ import { redisConnection } from "./utils/Radis/Connection.js";
 import authRouter from "./Modules/authentication/auth.controller.js";
 import currencyRouter from "./Modules/Transactions/currency/currency.controller.js";
 import plansRouter from "./Modules/Subscription/Plans/plans.controller.js";
+import subjectsRouter from "./Modules/Teachers/subjects/subjects.controller.js";
+import systemRouter from "./Modules/System/system.controller.js";
 import cors from "cors";
 import morgan from "morgan";
 import path from "node:path";
@@ -17,6 +19,8 @@ const bootstrap = async () => {
   app.use("/auth", authRouter);
   app.use("/transactions/currency", currencyRouter);
   app.use("/subscription/plans", plansRouter);
+  app.use("/system", systemRouter);
+  app.use("/teachers/subjects", subjectsRouter);
   app.use("/uploads", express.static(path.resolve("./src/uploads")));
   app.get("/", (req, res) => {
     res.json({ message: "Hello World!" });

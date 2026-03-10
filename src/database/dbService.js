@@ -116,6 +116,6 @@ export const deleteOne = async ({ model, where = {}, include, select }) => {
   });
 };
 
-export const count = async ({ model }) => {
-  return await getClient(model).count();
+export const count = async ({ model, where = {} }) => {
+  return await getClient(model).count({ where });
 };
