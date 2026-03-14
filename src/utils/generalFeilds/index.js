@@ -235,11 +235,7 @@ export const generalFeilds = {
     "array.empty": "Features cannot be empty",
     "any.required": "Features is required",
   }),
-  id: Joi.string().uuid().required().messages({
-    "string.base": "ID must be a string",
-    "string.empty": "ID cannot be empty",
-    "any.required": "ID is required",
-  }),
+  id: Joi.string().uuid(),
   color: Joi.string()
     .pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
     .messages({

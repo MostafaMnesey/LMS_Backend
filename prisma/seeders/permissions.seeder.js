@@ -25,6 +25,12 @@ export const permissions = [
   // Role & Permission Management
   { name: "manage roles", code: "MANAGE_ROLES" },
   { name: "manage permissions", code: "MANAGE_PERMISSIONS" },
+
+  // Stuff Management
+  { name: "view stuff", code: "VIEW_STUFF" },
+  { name: "create stuff", code: "CREATE_STUFF" },
+  { name: "update stuff", code: "UPDATE_STUFF" },
+  { name: "delete stuff", code: "DELETE_STUFF" },
 ];
 
 export async function seedPermissions() {

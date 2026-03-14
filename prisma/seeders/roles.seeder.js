@@ -10,15 +10,15 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 export const roles = [
-  { name: "Admin" },
-  { name: "Teacher" },
-  { name: "Student" },
+  { name: "super_admin" },
+  { name: "admin" },
+  { name: "teacher" },
+  { name: "student" },
 ];
 
 export async function seedRoles() {
-  console.log("Start seeding roles and linking permissions...");
+  console.log("Start seeding roles...");
 
-  // 1. Seed Roles
   const seededRoles = await Promise.all(
     roles.map((role) =>
       prisma.role.upsert({
@@ -29,52 +29,7 @@ export async function seedRoles() {
     ),
   );
 
-  const roleMap = seededRoles.reduce((acc, role) => {
-    acc[role.name] = role.id;
-    return acc;
-  }, {});
-
-  // 2. Fetch all permissions to map them
-  const allPermissions = await prisma.permission.findMany();
-  const permMap = allPermissions.reduce((acc, perm) => {
-    acc[perm.name] = perm.id;
-    return acc;
-  }, {});
-
-  // 3. Define Role-Permission relationships
-  const rolePermissions = [
-    // Admin gets everything
-    ...allPermissions.map((p) => ({
-      roleId: roleMap["Admin"],
-      permissionId: p.id,
-    })),
-
-    // Teacher permissions
-    { roleId: roleMap["Teacher"], permissionId: permMap["view_subjects"] },
-    { roleId: roleMap["Teacher"], permissionId: permMap["view_plans"] },
-
-    // Student permissions
-    { roleId: roleMap["Student"], permissionId: permMap["view_subjects"] },
-    { roleId: roleMap["Student"], permissionId: permMap["view_plans"] },
-  ].filter((rp) => rp.roleId && rp.permissionId);
-
-  // 4. Seed RolePermission mapping
-  await Promise.all(
-    rolePermissions.map((rp) =>
-      prisma.rolePermission.upsert({
-        where: {
-          roleId_permissionId: {
-            roleId: rp.roleId,
-            permissionId: rp.permissionId,
-          },
-        },
-        update: rp,
-        create: rp,
-      }),
-    ),
-  );
-
-  console.log("Seeded roles and linked permissions.");
+  console.log("Seeded roles.");
   return seededRoles;
 }
 

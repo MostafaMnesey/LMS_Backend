@@ -9,17 +9,20 @@ datasource db {
 // users model 
 
 model user {
-  id          String    @id @default(uuid())
-  email       String    @unique
-  password    String
-  name        String
-  phone       String
-  codeCountry String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  confirmAt   DateTime?
-  role        role?     @relation(fields: [roleId], references: [id])
-  roleId      String?   @unique
+  id           String    @id @default(uuid())
+  email        String    @unique
+  password     String
+  name         String
+  phone        String
+  code_country String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  confirmAt    DateTime?
+  role         role?     @relation(fields: [roleId], references: [id])
+  roleId       String?   @unique
+  stuff        stuff?
+  teacher      teacher?
+  student      student?
 
   @@index([email])
 }
@@ -31,6 +34,8 @@ model role {
   updatedAt       DateTime         @updatedAt
   user            user?
   rolePermissions rolePermission[]
+  stuff           stuff[]
+  teachers        teacher[]
 }
 
 model permission {
@@ -50,7 +55,7 @@ model rolePermission {
   roleId       String
   permissionId String
   role         role       @relation(fields: [roleId], references: [id])
-  permission   permission @relation(fields: [permissionId], references: [id])
+  permission   permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -58,16 +63,17 @@ model rolePermission {
 }
 
 model currency {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   name_en      String
   name_ar      String
   symbol       String
-  code         String   @unique
+  code         String    @unique
   exchangeRate Float
-  default      Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  default      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   Plans        Plans[]
+  teachers     teacher[]
 
   @@index([name_en])
   @@index([name_ar])
@@ -75,34 +81,112 @@ model currency {
 }
 
 model Plans {
-  id            String   @id @default(uuid())
-  name_en       String   @unique
-  name_ar       String   @unique
+  id            String    @id @default(uuid())
+  name_en       String    @unique
+  name_ar       String    @unique
   description   String
   price         String
   duration      Int
   sessionsCount Int
-  active        Boolean  @default(false)
-  bestSeller    Boolean  @default(false)
+  active        Boolean   @default(false)
+  bestSeller    Boolean   @default(false)
   features      String[]
   currencyId    String
-  currency      currency @relation(fields: [currencyId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  currency      currency  @relation(fields: [currencyId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  students      student[]
 
   @@index([name_en])
   @@index([name_ar])
 }
 
 model subjects {
-  id        String   @id @default(uuid())
-  name_en   String   @unique
-  name_ar   String   @unique
-  active    Boolean  @default(false)
-  color     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String            @id @default(uuid())
+  name_en         String            @unique
+  name_ar         String            @unique
+  active          Boolean           @default(false)
+  color           String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  teacherSubjects teacher_subject[]
 
   @@index([name_en])
   @@index([name_ar])
+}
+
+model stuff {
+  id           String    @id @default(uuid())
+  user_id      String?   @unique
+  name         String
+  email        String    @unique
+  password     String
+  phone        String
+  code_country String
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  confirm_at   DateTime?
+  role         role?     @relation(fields: [roleId], references: [id])
+  roleId       String?
+  user         user?     @relation(fields: [user_id], references: [id])
+
+  @@index([email])
+}
+
+model teacher {
+  id              String            @id @default(uuid())
+  user_id         String?           @unique
+  name            String
+  email           String            @unique
+  password        String
+  phone           String
+  currencyId      String
+  currency        currency          @relation(fields: [currencyId], references: [id])
+  hour_price      Float
+  gender          String
+  active          Boolean           @default(false)
+  code_country    String
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  confirm_at      DateTime?
+  role            role?             @relation(fields: [roleId], references: [id])
+  roleId          String?
+  user            user?             @relation(fields: [user_id], references: [id])
+  teacherSubjects teacher_subject[]
+}
+
+model teacher_subject {
+  id        String   @id @default(uuid())
+  teacherId String
+  subjectId String
+  teacher   teacher  @relation(fields: [teacherId], references: [id])
+  subject   subjects @relation(fields: [subjectId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([teacherId, subjectId])
+  @@index([teacherId])
+  @@index([subjectId])
+}
+
+model student {
+  id           String    @id @default(uuid())
+  user_id      String?   @unique
+  name         String
+  email        String    @unique
+  password     String
+  phone        String
+  code_country String
+  birth_date   DateTime
+  gender       String
+  active       Boolean   @default(false)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  confirm_at   DateTime?
+  user         user?     @relation(fields: [user_id], references: [id])
+  plan         Plans?    @relation(fields: [planId], references: [id])
+  planId       String?
+  country      String
+
+  @@index([email])
 }

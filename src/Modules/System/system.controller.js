@@ -10,10 +10,12 @@ import {
   deleteRoleSchema,
   updateRoleSchema,
 } from "./system.validation.js";
+import stuffRouter from "./stuff/stuff.controller.js";
 
 const router = Router();
 
 router.use("/permissions", permissionsRouter);
+router.use("/stuff", stuffRouter);
 
 router.get(
   "/roles",

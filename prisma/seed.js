@@ -7,6 +7,10 @@ import { seedPlans } from "./seeders/plans.seeder.js";
 import { seedSubjects } from "./seeders/subjects.seeder.js";
 import { seedPermissions } from "./seeders/permissions.seeder.js";
 import { seedRoles } from "./seeders/roles.seeder.js";
+import { seedRolePermissions } from "./seeders/rolePermission.seeder.js";
+import { seedStuff } from "./seeders/stuff.seeder.js";
+import { seedTeachers } from "./seeders/teachers.seeder.js";
+import { seedStudents } from "./seeders/student.seeder.js";
 
 dotenv.config();
 
@@ -22,6 +26,10 @@ async function main() {
   await seedSubjects();
   await seedPermissions();
   await seedRoles();
+  await seedRolePermissions();
+  await seedStuff();
+  await seedTeachers();
+  await seedStudents();
 
   console.log("--- Seeding Finished Successfully ---");
 }

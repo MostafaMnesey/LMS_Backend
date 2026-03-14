@@ -11,6 +11,9 @@
     "seed:plans": "node prisma/seeders/plans.seeder.js",
     "seed:subjects": "node prisma/seeders/subjects.seeder.js",
     "seed:permissions":"node prisma/seeders/permissions.seeder.js",
+    "seed:roles":"node prisma/seeders/roles.seeder.js",
+    "seed:stuff":"node prisma/seeders/stuff.seeder.js",
+    "seed:student":"node prisma/seeders/student.seeder.js",
     "seed:all": "npx prisma db seed"
   },
   "keywords": [],
