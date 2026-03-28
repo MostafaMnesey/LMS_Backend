@@ -6,23 +6,23 @@ datasource db {
   provider = "postgresql"
 }
 
-// users model 
-
 model user {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  password     String
-  name         String
-  phone        String
-  code_country String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  confirmAt    DateTime?
-  role         role?     @relation(fields: [roleId], references: [id])
-  roleId       String?   @unique
-  stuff        stuff?
-  teacher      teacher?
-  student      student?
+  id                   String                 @id @default(uuid())
+  email                String                 @unique
+  password             String
+  name                 String
+  phone                String                 @unique
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  confirmAt            DateTime?
+  roleId               String?                @unique
+  code_country         String
+  status               String                 @default("pending")
+  student              student?
+  stuff                stuff?
+  subscriptionRequests subscription_requests?
+  teacher              teacher?
+  role                 role?                  @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
   @@index([email])
 }
@@ -32,18 +32,18 @@ model role {
   name            String           @unique
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  user            user?
   rolePermissions rolePermission[]
   stuff           stuff[]
   teachers        teacher[]
+  user            user?
 }
 
 model permission {
   id              String           @id @default(uuid())
   name            String           @unique
-  code            String           @unique
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  code            String           @unique
   rolePermissions rolePermission[]
 
   @@index([name])
@@ -54,10 +54,10 @@ model rolePermission {
   id           String     @id @default(uuid())
   roleId       String
   permissionId String
-  role         role       @relation(fields: [roleId], references: [id])
-  permission   permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  permission   permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, permissionId])
 }
@@ -68,10 +68,10 @@ model currency {
   name_ar      String
   symbol       String
   code         String    @unique
-  exchangeRate Float
   default      Boolean   @default(false)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  exchangeRate Float
   Plans        Plans[]
   teachers     teacher[]
 
@@ -81,21 +81,22 @@ model currency {
 }
 
 model Plans {
-  id            String    @id @default(uuid())
-  name_en       String    @unique
-  name_ar       String    @unique
-  description   String
-  price         String
-  duration      Int
-  sessionsCount Int
-  active        Boolean   @default(false)
-  bestSeller    Boolean   @default(false)
-  features      String[]
-  currencyId    String
-  currency      currency  @relation(fields: [currencyId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  students      student[]
+  id                   String                 @id @default(uuid())
+  name_en              String                 @unique
+  name_ar              String                 @unique
+  description          String
+  price                String
+  duration             Int
+  hours                Float                  @default(0)
+  features             String[]
+  currencyId           String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  active               Boolean                @default(false)
+  bestSeller           Boolean                @default(false)
+  currency             currency               @relation(fields: [currencyId], references: [id])
+  students             student[]
+  subscriptionRequests subscription_requests?
 
   @@index([name_en])
   @@index([name_ar])
@@ -121,14 +122,14 @@ model stuff {
   name         String
   email        String    @unique
   password     String
-  phone        String
+  phone        String    @unique
   code_country String
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
   confirm_at   DateTime?
-  role         role?     @relation(fields: [roleId], references: [id])
   roleId       String?
-  user         user?     @relation(fields: [user_id], references: [id])
+  role         role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  user         user?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([email])
 }
@@ -139,9 +140,8 @@ model teacher {
   name            String
   email           String            @unique
   password        String
-  phone           String
+  phone           String            @unique
   currencyId      String
-  currency        currency          @relation(fields: [currencyId], references: [id])
   hour_price      Float
   gender          String
   active          Boolean           @default(false)
@@ -149,9 +149,11 @@ model teacher {
   created_at      DateTime          @default(now())
   updated_at      DateTime          @updatedAt
   confirm_at      DateTime?
-  role            role?             @relation(fields: [roleId], references: [id])
   roleId          String?
-  user            user?             @relation(fields: [user_id], references: [id])
+  schedules       schedule[]
+  currency        currency          @relation(fields: [currencyId], references: [id])
+  role            role?             @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  user            user?             @relation(fields: [user_id], references: [id], onDelete: Cascade)
   teacherSubjects teacher_subject[]
 }
 
@@ -159,10 +161,10 @@ model teacher_subject {
   id        String   @id @default(uuid())
   teacherId String
   subjectId String
-  teacher   teacher  @relation(fields: [teacherId], references: [id])
-  subject   subjects @relation(fields: [subjectId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  subject   subjects @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher   teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@unique([teacherId, subjectId])
   @@index([teacherId])
@@ -170,23 +172,69 @@ model teacher_subject {
 }
 
 model student {
-  id           String    @id @default(uuid())
-  user_id      String?   @unique
-  name         String
-  email        String    @unique
-  password     String
-  phone        String
-  code_country String
-  birth_date   DateTime
-  gender       String
-  active       Boolean   @default(false)
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  confirm_at   DateTime?
-  user         user?     @relation(fields: [user_id], references: [id])
-  plan         Plans?    @relation(fields: [planId], references: [id])
-  planId       String?
-  country      String
+  id              String     @id @default(uuid())
+  user_id         String?    @unique
+  name            String
+  email           String     @unique
+  password        String
+  phone           String     @unique
+  code_country    String
+  birth_date      DateTime
+  gender          String
+  active          Boolean    @default(false)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  hours           Float      @default(0)
+  hours_attended  Float      @default(0)
+  hours_remaining Float      @default(0)
+  confirm_at      DateTime?
+  planId          String?
+  country         String
+  status          String     @default("pending")
+  schedules       schedule[]
+  plan            Plans?     @relation(fields: [planId], references: [id], onDelete: SetNull)
+  user            user?      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([email])
+}
+
+model subscription_requests {
+  id        String   @id @default(uuid())
+  planId    String   @unique
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user_id   String   @unique
+  plan      Plans    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([planId])
+}
+
+model schedule {
+  id          String   @id @default(uuid())
+  teacherId   String
+  studentId   String
+  status      String   @default("planned")
+  title       String
+  description String
+  type        String   @default("half")
+  start_time  DateTime
+  end_time    DateTime
+  link        String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  student     student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher     teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  is_recurring        Boolean @default(false)
+  day_of_week         String?
+  parent_recurring_id String?
+
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([start_time])
+  @@index([end_time])
 }

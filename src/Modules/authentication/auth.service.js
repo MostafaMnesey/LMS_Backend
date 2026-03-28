@@ -4,12 +4,7 @@ import { redis } from "../../utils/Radis/Connection.js";
 import * as db from "../../database/dbService.js";
 
 import { asyncHandler, successResponse } from "../../utils/response.js";
-import {
-  compare,
-  decryptText,
-  encryptText,
-  hash,
-} from "../../utils/security/index.js";
+import { compare, decryptText, hash } from "../../utils/security/index.js";
 import { generateOtp } from "../../utils/security/otp.js";
 import { generateToken, verifyToken } from "../../utils/Token/token.js";
 
@@ -17,13 +12,54 @@ import { generateToken, verifyToken } from "../../utils/Token/token.js";
 /*                                SIGN IN AND SIGN UP                           */
 /* -------------------------------------------------------------------------- */
 export const register = asyncHandler(async (req, res, next) => {
-  const { name, email, password, phone, codeCountry } = req.body;
-  const checkuser = await db.findFirst({ model: "user", where: { email } });
-  if (checkuser) {
+  const {
+    name,
+    email,
+    password,
+    phone,
+    codeCountry,
+    plan_id,
+    birth_date,
+    gender,
+    country,
+  } = req.body;
+  const [
+    checkuser,
+    checkStudent,
+    checkPhoneUser,
+    checkPhoneStudent,
+    checkPhoneTeacher,
+    checkPhoneStuff,
+  ] = await Promise.all([
+    db.findFirst({ model: "user", where: { email } }),
+    db.findFirst({ model: "student", where: { email } }),
+    db.findFirst({ model: "user", where: { phone } }),
+    db.findFirst({ model: "student", where: { phone } }),
+    db.findFirst({ model: "teacher", where: { phone } }),
+    db.findFirst({ model: "stuff", where: { phone } }),
+  ]);
+  if (checkuser || checkStudent) {
     return next(new Error("User Already Exist", { cause: 400 }));
   }
+  if (
+    checkPhoneUser ||
+    checkPhoneStudent ||
+    checkPhoneTeacher ||
+    checkPhoneStuff
+  ) {
+    return next(new Error("Phone number already in use", { cause: 400 }));
+  }
+
+  if (plan_id) {
+    const exitsPlan = await db.findFirst({
+      model: "Plans",
+      where: { id: plan_id },
+    });
+    if (!exitsPlan) {
+      return next(new Error("Plan Not Found", { cause: 404 }));
+    }
+  }
   const hashedPassword = hash({ password });
-  const encryptedPhone = encryptText({ text: phone });
   const otp = generateOtp();
 
   const hashedOtp = hash({ password: otp });
@@ -42,10 +78,35 @@ export const register = asyncHandler(async (req, res, next) => {
       name,
       email,
       password: hashedPassword,
-      phone: encryptedPhone,
-      codeCountry,
+      phone: phone,
+      code_country: codeCountry,
     },
   });
+  await redis.set(
+    `${email}_Student_data`,
+    JSON.stringify({
+      name,
+      email,
+      password: hashedPassword,
+      phone: phone,
+      code_country: codeCountry,
+      birth_date,
+      gender,
+      country,
+      user_id: user.id,
+    }),
+  );
+  await redis.expire(`${email}_Student_data`, 60 * 60 * 24);
+
+  if (plan_id) {
+    const request = await db.create({
+      model: "subscription_requests",
+      data: {
+        user_id: user.id,
+        planId: plan_id,
+      },
+    });
+  }
 
   return successResponse({
     res,
@@ -167,17 +228,18 @@ export const forgetPassword = asyncHandler(async (req, res, next) => {
     where: { email, confirmAt: { not: null } },
   });
   if (!checkuser) {
-    return next(new Error("User Not Found or Account Not Confirmed", { cause: 404 }));
+    return next(
+      new Error("User Not Found or Account Not Confirmed", { cause: 404 }),
+    );
   }
   const otp = generateOtp();
   const hashedOtp = hash({ password: otp });
   await redis.set(`${email}_otp_forget_password`, hashedOtp);
   await redis.expire(`${email}_otp_forget_password`, 60 * 10);
-  const text="Reset Your Password"
-  const subject=text
+  const text = "Reset Your Password";
+  const subject = text;
 
-  sendEmailEvent.emit("sendEmail", { email, otp,  subject ,
-    text , });
+  sendEmailEvent.emit("sendEmail", { email, otp, subject, text });
 
   return successResponse({
     res,
@@ -193,11 +255,12 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   }
   const hashedOtp = await redis.get(`${email}_otp_forget_password`);
   console.log(hashedOtp);
-  
-  
-  if(!hashedOtp)
-  {return next(new Error("In-valid OTP ,Please Enter vaild otp",{cause:404}))}
-  
+
+  if (!hashedOtp) {
+    return next(
+      new Error("In-valid OTP ,Please Enter vaild otp", { cause: 404 }),
+    );
+  }
 
   const comparedPassword = compare({ password: otp, hash: hashedOtp });
   if (!comparedPassword) {

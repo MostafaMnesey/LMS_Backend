@@ -60,12 +60,16 @@ export const createTeacher = asyncHandler(async (req, res, next) => {
     subject_ids,
   } = req.body;
 
-  const [checkuser, checkTeacher, checkcurrency, checksubjects] =
+  const [checkuser, checkTeacher, checkcurrency, checksubjects, checkPhoneUser, checkPhoneStudent, checkPhoneTeacher, checkPhoneStuff] =
     await Promise.all([
       db.findOne({ model: "user", where: { email } }),
       db.findOne({ model: "teacher", where: { email } }),
       db.findOne({ model: "currency", where: { id: currency_id } }),
       db.findMany({ model: "subjects", where: { id: { in: subject_ids } } }),
+      db.findFirst({ model: "user", where: { phone } }),
+      db.findFirst({ model: "student", where: { phone } }),
+      db.findFirst({ model: "teacher", where: { phone } }),
+      db.findFirst({ model: "stuff", where: { phone } }),
     ]);
   if (checkuser || checkTeacher) {
     return errorResponse({
@@ -82,6 +86,12 @@ export const createTeacher = asyncHandler(async (req, res, next) => {
   if (checksubjects.length !== subject_ids.length) {
     return errorResponse({
       message: "Some subjects not found",
+      next,
+    });
+  }
+  if (checkPhoneUser || checkPhoneStudent || checkPhoneTeacher || checkPhoneStuff) {
+    return errorResponse({
+      message: "Phone number already in use",
       next,
     });
   }
@@ -192,6 +202,21 @@ export const updateTeacher = asyncHandler(async (req, res, next) => {
     if (checkuser || checkTeacher) {
       return errorResponse({
         message: "Email already exists",
+        next,
+      });
+    }
+  }
+
+  if (phone && phone !== teacher.phone) {
+    const [checkPhoneUser, checkPhoneStudent, checkPhoneTeacher, checkPhoneStuff] = await Promise.all([
+      db.findFirst({ model: "user", where: { phone } }),
+      db.findFirst({ model: "student", where: { phone } }),
+      db.findFirst({ model: "teacher", where: { phone, id: { not: id } } }),
+      db.findFirst({ model: "stuff", where: { phone } }),
+    ]);
+    if (checkPhoneUser || checkPhoneStudent || checkPhoneTeacher || checkPhoneStuff) {
+      return errorResponse({
+        message: "Phone number already in use",
         next,
       });
     }

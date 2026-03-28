@@ -7,9 +7,11 @@ const getClient = (model) => {
   }
   return client;
 };
-
-export const findMany = async ({ model, where = {}, include, select }) => {
-  return await getClient(model).findMany({
+export const transaction = async (actions) => {
+  return await prisma.$transaction(actions);
+};
+export const findMany = ({ model, where = {}, include, select }) => {
+  return getClient(model).findMany({
     where,
     ...(include ? { include } : {}),
     ...(select ? { select } : {}),
@@ -52,31 +54,31 @@ export const findManyWithPaginationAndCount = async ({
   };
 };
 
-export const create = async ({ model, data, include, select }) => {
-  return await getClient(model).create({
+export const create = ({ model, data, include, select }) => {
+  return getClient(model).create({
     data,
     ...(include ? { include } : {}),
     ...(select ? { select } : {}),
   });
 };
 
-export const findOne = async ({ model, where, include, select }) => {
-  return await getClient(model).findUnique({
+export const findOne = ({ model, where, include, select }) => {
+  return getClient(model).findUnique({
     where,
     ...(include ? { include } : {}),
     ...(select ? { select } : {}),
   });
 };
 
-export const findFirst = async ({ model, where, include, select }) => {
-  return await getClient(model).findFirst({
+export const findFirst = ({ model, where, include, select }) => {
+  return getClient(model).findFirst({
     where,
     ...(include ? { include } : {}),
     ...(select ? { select } : {}),
   });
 };
-export const updateOne = async ({ model, where, data, include, select }) => {
-  return await getClient(model).update({
+export const updateOne = ({ model, where, data, include, select }) => {
+  return getClient(model).update({
     where,
     data,
     ...(include ? { include } : {}),
@@ -84,11 +86,11 @@ export const updateOne = async ({ model, where, data, include, select }) => {
   });
 };
 
-export const updateMany = async ({ model, where, data }) => {
-  return await getClient(model).updateMany({ where, data });
+export const updateMany = ({ model, where, data }) => {
+  return getClient(model).updateMany({ where, data });
 };
 
-export const upsertOne = async ({
+export const upsertOne = ({
   model,
   where,
   update,
@@ -96,7 +98,7 @@ export const upsertOne = async ({
   include,
   select,
 }) => {
-  return await getClient(model).upsert({
+  return getClient(model).upsert({
     where,
     update,
     create,
@@ -105,17 +107,17 @@ export const upsertOne = async ({
   });
 };
 
-export const deleteMany = async ({ model, where = {} }) => {
-  return await getClient(model).deleteMany({ where });
+export const deleteMany = ({ model, where = {} }) => {
+  return getClient(model).deleteMany({ where });
 };
-export const deleteOne = async ({ model, where = {}, include, select }) => {
-  return await getClient(model).delete({
+export const deleteOne = ({ model, where = {}, include, select }) => {
+  return getClient(model).delete({
     where,
     ...(include ? { include } : {}),
     ...(select ? { select } : {}),
   });
 };
 
-export const count = async ({ model, where = {} }) => {
-  return await getClient(model).count({ where });
+export const count = ({ model, where = {} }) => {
+  return getClient(model).count({ where });
 };

@@ -7,6 +7,8 @@ export const generalFeilds = {
     "string.max": "Role name must be at most {#limit} characters",
     "any.required": "Role name is required",
   }),
+  url: Joi.string().uri(),
+
   permission_name: Joi.string().min(3).max(32).messages({
     "string.base": "Permission name must be a string",
     "string.empty": "Permission name cannot be empty",
@@ -64,6 +66,18 @@ export const generalFeilds = {
     "string.empty": "Gender cannot be empty",
     "any.only": "Gender must be either 'male' or 'female'",
     "any.required": "Gender is required",
+  }),
+  birth_date: Joi.date().iso().messages({
+    "date.base": "Birth date must be a valid date",
+    "date.empty": "Birth date cannot be empty",
+    "date.format": "Birth date must be in ISO format",
+    "any.required": "Birth date is required",
+  }),
+  date: Joi.date().iso(),
+  country: Joi.string().messages({
+    "string.base": "Country must be a string",
+    "string.empty": "Country cannot be empty",
+    "any.required": "Country is required",
   }),
   phone: Joi.string()
     .pattern(new RegExp("^(?:\\+20|0020|0)?1[0125][0-9]{8}$"))
@@ -200,7 +214,7 @@ export const generalFeilds = {
     "any.required": "Default is required",
   }),
 
-  description: Joi.string().min(50).max(1000).messages({
+  description: Joi.string().min(10).max(1000).messages({
     "string.base": "Description must be a string",
     "string.empty": "Description cannot be empty",
     "any.required": "Description is required",
@@ -230,12 +244,26 @@ export const generalFeilds = {
     "boolean.empty": "Best seller cannot be empty",
     "any.required": "Best seller is required",
   }),
+  type: Joi.string().valid("full", "half").required().messages({
+    "string.base": "Type must be a string",
+    "string.empty": "Type cannot be empty",
+    "any.required": "Type is required",
+    "any.only": "Type must be either 'full' or 'half'",
+  }),
   features: Joi.array().items(Joi.string()).required().messages({
     "array.base": "Features must be an array",
     "array.empty": "Features cannot be empty",
     "any.required": "Features is required",
   }),
   id: Joi.string().uuid(),
+  parent_recurring_id: Joi.string()
+    .pattern(/^rec_.{10}$/)
+    .required()
+    .messages({
+      "string.empty": "parent_recurring_id is required",
+      "any.required": "parent_recurring_id is required",
+      "string.pattern.base": "parent_recurring_id must be a valid recurring id",
+    }),
   color: Joi.string()
     .pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
     .messages({

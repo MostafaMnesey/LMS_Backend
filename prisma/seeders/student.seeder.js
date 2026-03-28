@@ -21,6 +21,7 @@ export const studentData = [
     gender: "male",
     country: "Egypt",
     active: true,
+    hours: 10,
     roleName: "student",
   },
   {
@@ -33,6 +34,7 @@ export const studentData = [
     gender: "female",
     country: "Egypt",
     active: true,
+    hours: 8,
     roleName: "student",
   },
 ];
@@ -66,6 +68,8 @@ export async function seedStudents() {
         gender: item.gender,
         country: item.country,
         active: item.active,
+        hours: item.hours,
+        hours_remaining: item.hours,
       },
       create: {
         name: item.name,
@@ -77,6 +81,8 @@ export async function seedStudents() {
         gender: item.gender,
         country: item.country,
         active: item.active,
+        hours: item.hours,
+        hours_remaining: item.hours,
       },
     });
   }

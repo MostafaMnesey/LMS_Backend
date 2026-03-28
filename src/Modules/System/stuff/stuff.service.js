@@ -116,6 +116,17 @@ export const createStuffUser = asyncHandler(async (req, res, next) => {
     return next(new Error("Email already exists", { cause: 400 }));
   }
 
+  // Check phone uniqueness across all models
+  const [checkPhoneUser, checkPhoneStudent, checkPhoneTeacher, checkPhoneStuff] = await Promise.all([
+    db.findFirst({ model: "user", where: { phone } }),
+    db.findFirst({ model: "student", where: { phone } }),
+    db.findFirst({ model: "teacher", where: { phone } }),
+    db.findFirst({ model: "stuff", where: { phone } }),
+  ]);
+  if (checkPhoneUser || checkPhoneStudent || checkPhoneTeacher || checkPhoneStuff) {
+    return next(new Error("Phone number already in use", { cause: 400 }));
+  }
+
   const hashedPassword = hash({ password });
 
   const newUser = await db.create({
@@ -167,6 +178,18 @@ export const updateStuffUser = asyncHandler(async (req, res, next) => {
 
   if (!stuff) {
     return next(new Error("Stuff user not found", { cause: 404 }));
+  }
+
+  if (phone && phone !== stuff.phone) {
+    const [checkPhoneUser, checkPhoneStudent, checkPhoneTeacher, checkPhoneStuff] = await Promise.all([
+      db.findFirst({ model: "user", where: { phone } }),
+      db.findFirst({ model: "student", where: { phone } }),
+      db.findFirst({ model: "teacher", where: { phone } }),
+      db.findFirst({ model: "stuff", where: { phone, id: { not: id } } }),
+    ]);
+    if (checkPhoneUser || checkPhoneStudent || checkPhoneTeacher || checkPhoneStuff) {
+      return next(new Error("Phone number already in use", { cause: 400 }));
+    }
   }
 
   const updatedStuff = await db.updateOne({

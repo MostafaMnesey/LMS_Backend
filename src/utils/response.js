@@ -36,7 +36,7 @@ export const globalErrorHandling = (err, req, res, next) => {
     status: status,
     error: err.message,
     ...(typeof err.cause === "object" ? { details: err.cause } : {}),
-    stack: err.stack,
+    ...(process.env.MOOD === "dev" && { stack: err.stack }),
   });
 };
 

@@ -1,4 +1,6 @@
 import { createClient } from "redis";
+import { Queue, Worker } from "bullmq";
+import IORedis from "ioredis";
 
 const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
 
@@ -16,3 +18,8 @@ export const redisConnection = async () => {
     await redis.connect();
   }
 };
+
+export const connection = new IORedis(process.env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+});
+export const notificationQueue = new Queue("notifications", { connection });
