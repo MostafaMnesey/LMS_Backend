@@ -12,6 +12,7 @@ import teacherRouter from "./Modules/Teachers/teachers/teacher.controller.js";
 import studentRouter from "./Modules/students/students.controller.js";
 import schedulesRouter from "./Modules/Schedules/schedules.controller.js";
 import calendarRouter from "./Modules/calendar/calendar.controller.js";
+import financesRouter from "./Modules/Finances/Finances.controller.js";
 import cors from "cors";
 import morgan from "morgan";
 import path from "node:path";
@@ -37,6 +38,7 @@ const bootstrap = async () => {
   app.use("/teachers", teacherRouter);
   app.use("/schedules", schedulesRouter);
   app.use("/calendar", calendarRouter);
+  app.use("/finances", financesRouter);
   app.use("/uploads", express.static(path.resolve("./src/uploads")));
   app.get("/", (req, res) => {
     res.json({ message: "Hello World!" });

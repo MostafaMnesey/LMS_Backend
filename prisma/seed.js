@@ -12,6 +12,9 @@ import { seedStuff } from "./seeders/stuff.seeder.js";
 import { seedTeachers } from "./seeders/teachers.seeder.js";
 import { seedStudents } from "./seeders/student.seeder.js";
 import { seedSchedules } from "./seeders/schedules.seeder.js";
+import { seedTeacherSubjects } from "./seeders/teacherSubject.seeder.js";
+import { seedSubscriptionRequests } from "./seeders/subscriptionRequests.seeder.js";
+import { seedExpenses } from "./seeders/expenses.seeder.js";
 
 dotenv.config();
 
@@ -30,8 +33,11 @@ async function main() {
   await seedRolePermissions();
   await seedStuff();
   await seedTeachers();
+  await seedTeacherSubjects();
   await seedStudents();
+  await seedSubscriptionRequests();
   await seedSchedules();
+  await seedExpenses();
 
   console.log("--- Seeding Finished Successfully ---");
 }

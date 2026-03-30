@@ -83,8 +83,8 @@ export async function seedTeachers() {
         gender: item.gender,
         hour_price: item.hour_price,
         active: item.active,
-        roleId: role.id,
-        currencyId: currency.id,
+        role: { connect: { id: role.id } },
+        currency: { connect: { id: currency.id } },
       },
       create: {
         name: item.name,
@@ -95,9 +95,19 @@ export async function seedTeachers() {
         gender: item.gender,
         hour_price: item.hour_price,
         active: item.active,
-        roleId: role.id,
-        currencyId: currency.id,
-        user_id: null,
+        role: { connect: { id: role.id } },
+        currency: { connect: { id: currency.id } },
+        user: {
+          create: {
+            email: item.email,
+            password: hashedPassword,
+            name: item.name,
+            phone: item.phone,
+            code_country: item.code_country,
+            status: "active",
+            role: { connect: { id: role.id } },
+          },
+        },
       },
     });
   }

@@ -67,11 +67,11 @@ export async function seedPlans() {
       where: { name_en: planData.name_en }, // Fixed: unique on name_en instead of currencyId
       update: {
         ...planData,
-        currencyId: currency.id,
+        currency: { connect: { id: currency.id } },
       },
       create: {
         ...planData,
-        currencyId: currency.id,
+        currency: { connect: { id: currency.id } },
       },
     });
   }

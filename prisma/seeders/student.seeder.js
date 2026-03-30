@@ -15,7 +15,7 @@ export const studentData = [
     name: "John Doe",
     email: "john.doe@lms.com",
     password: "password123",
-    phone: "1112223334",
+    phone: "9998887776",
     code_country: "+20",
     birth_date: new Date("2000-01-01T00:00:00Z"),
     gender: "male",
@@ -28,7 +28,7 @@ export const studentData = [
     name: "Jane Smith",
     email: "jane.smith@lms.com",
     password: "password123",
-    phone: "5556667778",
+    phone: "4443332221",
     code_country: "+20",
     birth_date: new Date("2002-05-15T00:00:00Z"),
     gender: "female",
@@ -83,6 +83,19 @@ export async function seedStudents() {
         active: item.active,
         hours: item.hours,
         hours_remaining: item.hours,
+        user: {
+          create: {
+            email: item.email,
+            password: hashedPassword,
+            name: item.name,
+            phone: item.phone,
+            code_country: item.code_country,
+            status: "active",
+            role: {
+              connect: { id: role.id },
+            },
+          },
+        },
       },
     });
   }

@@ -15,6 +15,9 @@
     "seed:stuff": "node prisma/seeders/stuff.seeder.js",
     "seed:student": "node prisma/seeders/student.seeder.js",
     "seed:schedule": "node prisma/seeders/schedules.seeder.js",
+    "seed:teacher-subject": "node prisma/seeders/teacherSubject.seeder.js",
+    "seed:subscription-requests": "node prisma/seeders/subscriptionRequests.seeder.js",
+    "seed:expenses": "node prisma/seeders/expenses.seeder.js",
     "seed:all": "npx prisma db seed"
   },
   "keywords": [],

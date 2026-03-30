@@ -63,17 +63,18 @@ model rolePermission {
 }
 
 model currency {
-  id           String    @id @default(uuid())
+  id           String     @id @default(uuid())
   name_en      String
   name_ar      String
   symbol       String
-  code         String    @unique
-  default      Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  code         String     @unique
+  default      Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   exchangeRate Float
   Plans        Plans[]
   teachers     teacher[]
+  expenses     expenses[]
 
   @@index([name_en])
   @@index([name_ar])
@@ -237,4 +238,18 @@ model schedule {
   @@index([studentId])
   @@index([start_time])
   @@index([end_time])
+}
+
+model expenses {
+  id           String   @id @default(uuid())
+  title        String
+  currencyId   String
+  amount       Float
+  payment_type String
+  type         String
+  status       String
+  date         DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  currency     currency @relation(fields: [currencyId], references: [id], onDelete: Cascade)
 }

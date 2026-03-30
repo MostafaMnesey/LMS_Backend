@@ -62,16 +62,26 @@ export async function seedStuff() {
         name: item.name,
         phone: item.phone,
         code_country: item.code_country,
-        roleId: role.id,
+        role: { connect: { id: role.id } },
       },
       create: {
         name: item.name,
         email: item.email,
         password: hashedPassword,
         phone: item.phone,
-        user_id: null, // حل المشكلة هنا
         code_country: item.code_country,
-        roleId: role.id,
+        role: { connect: { id: role.id } },
+        user: {
+          create: {
+            email: item.email,
+            password: hashedPassword,
+            name: item.name,
+            phone: item.phone,
+            code_country: item.code_country,
+            status: "active",
+            role: { connect: { id: role.id } },
+          },
+        },
       },
     });
   }
